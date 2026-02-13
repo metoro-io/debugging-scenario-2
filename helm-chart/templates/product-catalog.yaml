@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.productCatalog.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "microservice-demo.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.productCatalog.name }}
+  annotations:
+    metoro.source.repository.base64: Z2l0aHViLmNvbS9tZXRvcm8taW8vbWV0b3JvLWRlYnVnZ2luZy1zY2VuYXJpbwo=
+spec:
+  replicas: {{ .Values.productCatalog.replicas }}
+  selector:
+    matchLabels:
+      {{- include "microservice-demo.selectorLabels" .Values.productCatalog | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "microservice-demo.selectorLabels" .Values.productCatalog | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.productCatalog.name }}
+          image: "{{ .Values.productCatalog.image.repository }}:{{ .Values.productCatalog.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.productCatalog.service.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.productCatalog.service.port }}"
+          resources:
+            {{- toYaml .Values.productCatalog.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.productCatalog.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: {{ .Values.productCatalog.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.productCatalog.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "microservice-demo.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.productCatalog.name }}
+spec:
+  type: {{ .Values.productCatalog.service.type }}
+  ports:
+    - port: {{ .Values.productCatalog.service.port }}
+      targetPort: {{ .Values.productCatalog.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Values.productCatalog.name }}
+    app.kubernetes.io/part-of: microservice-demo 

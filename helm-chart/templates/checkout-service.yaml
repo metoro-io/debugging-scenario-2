@@ -1,0 +1,66 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.checkoutService.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "microservice-demo.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.checkoutService.name }}
+  annotations:
+    metoro.source.repository.base64: Z2l0aHViLmNvbS9tZXRvcm8taW8vbWV0b3JvLWRlYnVnZ2luZy1zY2VuYXJpbwo=
+spec:
+  replicas: {{ .Values.checkoutService.replicas }}
+  selector:
+    matchLabels:
+      {{- include "microservice-demo.selectorLabels" .Values.checkoutService | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "microservice-demo.selectorLabels" .Values.checkoutService | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Values.checkoutService.name }}
+          image: "{{ .Values.checkoutService.image.repository }}:{{ .Values.checkoutService.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.checkoutService.service.port }}
+          env:
+            - name: PORT
+              value: "{{ .Values.checkoutService.service.port }}"
+            - name: PRODUCT_CATALOG_SERVICE
+              value: "http://{{ .Values.productCatalog.name }}:{{ .Values.productCatalog.service.port }}"
+            - name: CURRENCY_SERVICE
+              value: "http://{{ .Values.currencyService.name }}:{{ .Values.currencyService.service.port }}"
+          resources:
+            {{- toYaml .Values.checkoutService.resources | nindent 12 }}
+          livenessProbe:
+            httpGet:
+              path: /healthz/live
+              port: {{ .Values.checkoutService.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz/ready
+              port: {{ .Values.checkoutService.service.port }}
+            initialDelaySeconds: 15
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.checkoutService.name }}
+  namespace: {{ .Values.global.namespace }}
+  labels:
+    {{- include "microservice-demo.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ .Values.checkoutService.name }}
+spec:
+  type: {{ .Values.checkoutService.service.type }}
+  ports:
+    - port: {{ .Values.checkoutService.service.port }}
+      targetPort: {{ .Values.checkoutService.service.port }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ .Values.checkoutService.name }}
+    app.kubernetes.io/part-of: microservice-demo 

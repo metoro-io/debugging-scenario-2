@@ -1,0 +1,193 @@
+# Global settings
+global:
+  namespace: microservice-demo
+  repository: quay.io/metoro/metoro-demo-applications
+  tag: latest
+  
+# Gateway service configuration
+gateway:
+  name: gateway
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: gateway-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8080
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Product catalog service configuration
+productCatalog:
+  name: product-catalog
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: product-catalog-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8081
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Currency service configuration
+currencyService:
+  name: currency-service
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: currency-service-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8082
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Ad service configuration
+adService:
+  name: ad-service
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: ad-service-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8083
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Checkout service configuration
+checkoutService:
+  name: checkout-service
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: checkout-service-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8084
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Inventory service configuration
+inventoryService:
+  name: inventory-service
+  image: quay.io/metoro/metoro-demo-applications:inventory-service-latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 8085
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  faultInject:
+    enabled: false
+    latency: 0
+    errorRate: 0
+
+# Load generator configuration
+loadGenerator:
+  name: load-generator
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: load-generator-latest
+  enabled: true
+  delayBetweenUsers: 2.0
+  metricsPort: 8099
+  service:
+    type: ClusterIP
+    port: 8099
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Instabook cache service configuration
+instabookCache:
+  name: instabook-cache
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: instabook-cache-latest
+  replicas: 1
+  apiToken: instabook-secret-token-2024
+  service:
+    type: ClusterIP
+    port: 8086
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Instabook service configuration
+instabook:
+  name: instabook
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: instabook-latest
+  replicas: 1
+  apiToken: instabook-secret-token-2024
+  service:
+    type: ClusterIP
+    port: 8087
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+
+# Load generator instabook configuration
+loadGeneratorInstabook:
+  name: load-generator-instabook
+  image:
+    repository: quay.io/metoro/metoro-demo-applications
+    tag: load-generator-instabook-latest
+  enabled: true
+  delayBetweenRequests: 3.0
+  metricsPort: 8098
+  service:
+    type: ClusterIP
+    port: 8098
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
